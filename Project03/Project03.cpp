@@ -40,7 +40,7 @@ int main()
    clang, g++, gcc
    c compiler : msvc, 표준+a
    */
-	short n;
+
 	char ch;
 
 	printf("정수를 입력하세요.\n");
