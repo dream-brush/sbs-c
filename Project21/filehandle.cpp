@@ -27,9 +27,9 @@ long get_file_size(const char* filename)
 }
 
 
-void save(const SCORE* score)
+void save(const SCORE* scores, size_t count)
 {
-	if (!score) // score == NULL
+	if (!scores) // score == NULL
 	{
 		printf("score가 NULL입니다. \n"); //debug 용도
 		return;
@@ -43,7 +43,7 @@ void save(const SCORE* score)
 		printf("score.dat 파일을 열 수 없습니다.\n");
 		return;
 	}
-	fwrite(score, sizeof(SCORE), 1, fp);
+	fwrite(scores, sizeof(SCORE), count, fp);
 
 
 	if (fp)
@@ -53,15 +53,18 @@ void save(const SCORE* score)
 	}
 }
 
+/*
+파일로부터 데이터들을 읽어서 동적 배열에 로딩한다.
+읽은 데이터들의 개수를 반환한다.
+*/
 
-
-SCORE* load()
+size_t load(SCORE** ppScores)
 {
 	long size = get_file_size(FILE_NAME);
 	if (size <= 0)
 	{
 		printf("저장된 데이터가 없습니다.\n");
-		return NULL;
+		return 0;
 	}
 	FILE* fp = NULL;
 	fp = fopen(FILE_NAME, "rb"); //rb  :  binary 파일 read(읽기)
@@ -69,7 +72,7 @@ SCORE* load()
 	if (!fp)
 	{
 		printf("score.dat 파일을 열 수 없습니다.\n");
-		return NULL; //파일을 열 수 없다면 바로 종료
+		return 0; //파일을 열 수 없다면 바로 종료
 	}
 	
 	// 동적 메모리 할당
@@ -83,7 +86,7 @@ SCORE* load()
 			fp = NULL;
 		}
 
-		return NULL;
+		return 0;
 	}
 
 	fread(score, size, 1, fp);
@@ -94,8 +97,9 @@ SCORE* load()
 		fclose(fp);
 		fp = NULL;
 	}
-
-	return score;
+	size_t count = size / sizeof(SCORE); // 개수 구하기
+	*ppScores = score; //배열 업데이트
+	return count;
 
 
 
